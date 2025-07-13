@@ -1,9 +1,14 @@
 from pathlib import Path
+from backend.config.Config import Config
 
-
-_filepath      = Path('include', 'auto_generated.ini')
+def get_filepath():
+    config = Config.get_instance()
+    active_game = config.data.active_game
+    filepath_str = config.data.game[active_game].target_analysis_path
+    return Path(filepath_str)
 
 def get_status():
+    _filepath = get_filepath()
     exists = _filepath.exists()
     enabled = False
     if exists:
@@ -12,12 +17,14 @@ def get_status():
     return exists, enabled
 
 def clear(terminal=None):
-    _filepath      .write_text('', encoding='utf-8')
+    _filepath = get_filepath()
+    _filepath.write_text('', encoding='utf-8')
 
     if terminal:
         terminal.print(f'Cleared targeted ini content from <PATH>{_filepath.absolute()}</PATH>')
 
 def generate(export_name, model_hashes, component_names, d3dx_path: Path, terminal, dump_rt = True, force_dump_dds = False, symlink = False, share_dupes = False):
+    _filepath = get_filepath()
     targeted_content = '\n\n'.join([
         '\n'.join([
             '[TextureOverrideModel{}]'.format(i+1),

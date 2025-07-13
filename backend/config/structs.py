@@ -25,6 +25,7 @@ class _GameConfigOptionData():
 
 @dataclass
 class _GameConfigData():
+    target_analysis_path      : str = str(Path('.', 'include', 'auto_generated.ini').absolute())
     frame_analysis_parent_path: str = ''
     extract_path              : str = default_extract_path
     game_options     :     _GameConfigOptionData = field(default_factory=lambda:     _GameConfigOptionData())
@@ -50,9 +51,9 @@ class ConfigData():
         }
     )
     def __post_init__(self):
-        for k in self.game:
-            if not is_dataclass(self.game[k]):
-                self.game[k] = _GameConfigData(**self.game[k])
+        for k, v in self.game.items():
+            if not isinstance(v, _GameConfigData):
+                self.game[k] = _GameConfigData(**v)
 
     @staticmethod
     def validate_config_data(d: dict):
@@ -67,7 +68,7 @@ class ConfigData():
         _validate_helper(d, default_config_data, [],       {'active_game', 'targeted_analysis_enabled', 'reverse_shapekeys_hsr', 'reverse_shapekeys_zzz', 'game'})
         _validate_helper(d, default_config_data, ['game'], {'zzz', 'hsr', 'gi', 'hi3'})
         for g in GAME_NAME:
-            _validate_helper(d, default_config_data, ['game', g], {'extract_path', 'frame_analysis_parent_path', 'game_options', 'targeted_options'})
+            _validate_helper(d, default_config_data, ['game', g], {'target_analysis_path', 'extract_path', 'frame_analysis_parent_path', 'game_options', 'targeted_options'})
             _validate_helper(d, default_config_data, ['game', g, 'game_options'], {'clean_extract_folder', 'open_extract_folder', 'delete_frame_analysis'})
             _validate_helper(d, default_config_data, ['game', g, 'targeted_options'], {'force_dump_dds', 'dump_rt', 'symlink', 'share_dupes'})
             
