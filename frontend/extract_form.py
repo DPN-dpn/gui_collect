@@ -73,7 +73,17 @@ class ExtractForm(tk.Frame):
         targeted_dump_frame_title = tk.Label(self.targeted_dump, text='Targeted Frame Analysis', bg='#222', fg='#555', anchor='w', font=('Arial', '16', 'bold'))
         targeted_dump_frame_title.pack(fill='x')
         
-        pp = PathPicker(self.targeted_dump, value=Path('include', 'auto_generated.ini'), callback=None, bg='#333', button_bg=self.accent_color)
+        def handle_target_analysis_path_change(newPath: str):
+            target_analysis_path = str(Path(newPath) / 'auto_generated.ini')
+            self.cfg.data.game[self.variant.value].target_analysis_path = target_analysis_path
+            self.terminal.print('Set Config: /game/{}/target_analysis_path = <PATH>{}</PATH>'.format(self.variant.value, target_analysis_path))
+            from .xtk.PathPicker import get_short_path
+            pp.path = Path(target_analysis_path)
+            pp.path_text = get_short_path(pp.path)
+            pp.path_label.config(text=pp.path_text)
+
+        current_target_analysis_path = self.cfg.data.game[self.variant.value].target_analysis_path
+        pp = PathPicker(self.targeted_dump, value=current_target_analysis_path, callback=handle_target_analysis_path_change, bg='#333', button_bg=self.accent_color)
         pp.pack(side='top', fill='x', pady=(0, 12))
 
         targeted_options = self.cfg.data.game[self.variant.value].targeted_options

@@ -43,7 +43,7 @@ class Config():
 
     def _create_config(self):
         with open(self._config_filepath, 'w', encoding='utf-8') as f:
-            json.dump(asdict(ConfigData()), f, indent=4)
+            json.dump(asdict(ConfigData()), f, indent=4, ensure_ascii=False)
 
     def _load_config(self) -> dict:
         with open(self._config_filepath, 'r', encoding='utf-8') as f:
@@ -59,7 +59,7 @@ class Config():
 
     def save_config(self):
         with open(self._config_filepath, 'w', encoding='utf-8') as f:
-            json.dump(asdict(self.data), f, indent=4)
+            json.dump(asdict(self.data), f, indent=4, ensure_ascii=False)
 
     def prompt_config_refresh(self):
         ans = ''
